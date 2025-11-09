@@ -1,4 +1,4 @@
-import { generateSession, getAllReports, getAllSubjectsOfInstructor } from "@/Api/Api"
+import { attendanceMark, generateSession, getAllReports, getAllSubjectsOfInstructor, leave } from "@/Api/Api"
 import { Axios } from "@/Api/AxiosCreate"
 import {
     Table,
@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useEffect, useState } from "react"
 import Cookie from 'cookie-universal'
 import QRCode from "qrcode"
+import { Print } from "@/Components/print/Print"
 
 
 
@@ -51,6 +52,7 @@ export default function Instructor() {
         setReports("")
         await Axios.post(`${generateSession}/${id}`, {userId: userId})
             .then(res=>{
+                cookie.set("session",res.data.session)
                 QRCode.toDataURL(res.data.session)
                 .then(url =>{ 
                     setMessage("The QR Code Created Successfuly")
@@ -75,13 +77,13 @@ export default function Instructor() {
             )
     }
 
-    async function handelReport(id){
+    async function handelReport(subjectId){
         setMessage("")
         await Axios.get(getAllReports, {
             params: {
                 month: (date.getMonth() + 1),
                 year:  date.getFullYear(),
-                subjectId: id
+                subjectId: subjectId
             }
         })
         .then(res=>{
@@ -100,6 +102,32 @@ export default function Instructor() {
         }
         )
     }
+
+    async function handelLeave(studentId, subjectId){
+        setMessage("")
+        const session = await cookie.get("session")
+        await Axios.post(`${attendanceMark}${leave}`,{
+            userId: studentId,
+            session: session
+        })
+        .then(res=>{
+            setMessage(res.data.message)
+            handelReport(subjectId)
+        })
+        .catch((err)=>{
+        try {
+            if (err.response) {
+                setMessage(err.response.data.message)
+            } else{
+            setMessage(err.message)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+        }
+        )
+    }
+
 
     return (
         <div className="w-screen min-h-screen text-white flex p-2 flex-col">
@@ -157,9 +185,11 @@ export default function Instructor() {
             </TableRow>
         </TableFooter>
         </Table>
+        
         {
         (reports.length !== 0)
         &&
+        <div className="flex justify-center items-center flex-col w-full">
         <Table>
         <TableCaption className="text-white">Monthly Attendance Report</TableCaption>
         <TableCaption className="text-white">{message}</TableCaption>
@@ -170,6 +200,7 @@ export default function Instructor() {
                 <TableHead className="text-white">Present</TableHead>
                 <TableHead className="text-white">Absent</TableHead>
                 <TableHead className="text-white">Leave</TableHead>
+                <TableHead className="text-white flex justify-center items-center">Action</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
@@ -183,13 +214,18 @@ export default function Instructor() {
                 <TableCell>{item.present}</TableCell>
                 <TableCell>{item.absent}</TableCell>
                 <TableCell>{item.leave}</TableCell>
+                <TableCell className="flex justify-center items-center">
+                    <div className="flex justify-start items-center gap-1">
+                        <Button variant="destructive" className="bg-green-500 hover:bg-emerald-800" onClick={()=>handelLeave(item.studentId, reports.subjectId)}>Leave</Button>
+                    </div>
+                </TableCell>
             </TableRow>
             ))
         }
         </TableBody>
         <TableFooter>
             <TableRow>
-            <TableCell colSpan={5}>Total Lecture</TableCell>
+            <TableCell colSpan={5}>Total Lectures</TableCell>
             <TableCell className="text-right">{reports.totalSessions}</TableCell>
             </TableRow>
             <TableRow>
@@ -198,6 +234,12 @@ export default function Instructor() {
             </TableRow>
         </TableFooter>
         </Table>
+        {
+            reports.totalSessions > 0
+            &&
+            <Button className="w-[30%]" variant="secondary" onClick={()=>Print(reports)}>Print</Button>
+        }
+        </div>
         }
     </div>
     )
