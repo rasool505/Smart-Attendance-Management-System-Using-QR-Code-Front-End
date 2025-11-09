@@ -77,7 +77,6 @@ export default function Instructor() {
 
     async function handelReport(id){
         setMessage("")
-        setQr("")
         await Axios.get(getAllReports, {
             params: {
                 month: (date.getMonth() + 1),
