@@ -16,3 +16,4 @@ export const usersURL = "/users"
 export const getAllInstructors = `${usersURL}/instructors`
 export const getAllStudents = `${usersURL}/students`
 export const subject = "/subject"
+export const Assigned = "/studentsAssignedToSubject"

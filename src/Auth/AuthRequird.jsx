@@ -13,11 +13,3 @@ export default function AuthRequird({allowedRole}) {
     { token ?  userRole === '' ? <Loading/> : allowedRole.includes(userRole) ? <Outlet/> : <Navigate to={'/403'} replace={true}/> : <Navigate to={'/login'} replace={true}/>}
   </React.Fragment>
 }
-
-AuthRequird.propTypes = {
-  allowedRole: PropTypes.arrayOf(PropTypes.string),
-};
-
-AuthRequird.defaultProps = {
-  allowedRole: [],
-};

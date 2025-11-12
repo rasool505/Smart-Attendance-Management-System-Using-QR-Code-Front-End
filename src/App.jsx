@@ -6,8 +6,10 @@ import QrView from './Pages/QrView.jsx';
 import AuthRequird from './Auth/AuthRequird.jsx';
 import Error404 from './Components/atom/Error404.jsx';
 import Error403 from './Components/atom/Error403.jsx';
-import Admin from './Pages/Admin.jsx';
-import Users from './Pages/Users.jsx';
+import Admin from './Pages/Admin/Admin.jsx';
+import Users from './Pages/Admin/Users.jsx';
+import UpdateUser from './Pages/Admin/UpdateUser.jsx';
+import AddSubject from './Pages/Admin/AddSubject.jsx';
 
 function App() {
 
@@ -19,6 +21,8 @@ function App() {
       <Route element={<AuthRequird allowedRole={[0]}/>}>
       <Route path='/admin' element={<Admin/>}>
         <Route path='users' element={<Users/>}/>
+        <Route path='users/:id' element={<UpdateUser/>}/>
+        <Route path='subjects' element={<AddSubject/>}/>
       </Route>
       </Route>
       <Route element={<AuthRequird allowedRole={[0,1]}/>}>

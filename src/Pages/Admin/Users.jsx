@@ -1,4 +1,4 @@
-import { getAllInstructors, getAllStudents, subject, usersURL } from "@/Api/Api";
+import { Assigned, getAllInstructors, getAllStudents, subject, usersURL } from "@/Api/Api";
 import { Axios } from "@/Api/AxiosCreate";
 import { Button } from "@/Components/ui/button";
 import {
@@ -11,14 +11,28 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import {  useState } from "react"
+import {  useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 export default function Users(){
     const [users, setUsers] = useState([]);
     const [subjects, setSubjects] = useState([]);
     const [message, setMessage] = useState('');
-    const [path, setPath] = useState(0);
-
+    const [path, setPath] = useState(localStorage.getItem("path"));
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        if (path) {
+            
+            if (path == 1) {
+                handleGetStudents();
+            } else if(path == 2){
+                handleGetInstructors();
+            } else if(path == 3){
+                handleGetSubjects()
+            }
+        }
+    }, [path])
 
     async function handleGetSubjects() {
             setUsers([])
@@ -38,9 +52,9 @@ export default function Users(){
             }
             )
     }
+
     async function handleGetStudents() {
             setMessage("")
-            setPath(1)
             Axios.get(getAllStudents)
             .then(res=>setUsers(res.data))
             .catch((err)=>{
@@ -59,7 +73,6 @@ export default function Users(){
 
     async function handleGetInstructors() {
             setMessage("")
-            setPath(2)
             Axios.get(getAllInstructors)
             .then(res=>setUsers(res.data))
             .catch((err)=>{
@@ -121,15 +134,50 @@ export default function Users(){
         )
     }
 
+    async function handleAssigned(){
+        setMessage("")
+        await Axios.patch(`${subject}/${Assigned}`)
+        .then(res=>setMessage(res.data.message))
+        .catch((err)=>{
+            try {
+                if (err.response) {
+                    setMessage(err.response.data.message)
+                } else{
+                setMessage(err.message)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        )
+    }
+
     return (
             <div className="flex justify-center items-center flex-col w-full">
                 <div className="w-full h-fit mb-4">
                 <header className="w-full h-4">
                     <nav className="flex justify-items-start items-center p-1.5 gap-5">
                         <h1 className="scroll-m-20 text-center font-extrabold tracking-tight text-balance">ATTENDIFY</h1>
-                        <Button variant="link" className="text-white" onClick={()=>handleGetStudents()}>Students</Button>
-                        <Button variant="link" className="text-white" onClick={()=>handleGetInstructors()}>Instructors</Button>
-                        <Button variant="link" className="text-white" onClick={()=>handleGetSubjects()}>Subjects</Button>
+                        <Button variant="link" className="text-white" 
+                        onClick={()=>{
+                            handleGetStudents()
+                            localStorage.setItem("path", 1)
+                            setPath(localStorage.getItem("path"))
+                        }}>Students</Button>
+                        <Button variant="link" className="text-white" 
+                        onClick={()=>{
+                            handleGetInstructors()
+                            localStorage.setItem("path", 2)
+                            setPath(localStorage.getItem("path"))
+                        }}
+                        >Instructors</Button>
+                        <Button variant="link" className="text-white" 
+                        onClick={()=>{
+                            handleGetSubjects()
+                            localStorage.setItem("path", 3)
+                            setPath(localStorage.getItem("path"))
+                        }}
+                        >Subjects</Button>
                     </nav>
                 </header>
                 </div>
@@ -159,7 +207,10 @@ export default function Users(){
                                 <TableCell>{item.stage}</TableCell>
                                 <TableCell>{item.department}</TableCell>
                                 <TableCell className="flex gap-2">
-                                <Button className="bg-emerald-500 hover:bg-emerald-700 font-medium">Update</Button>
+                                <Button 
+                                className="bg-emerald-500 hover:bg-emerald-700 font-medium" 
+                                onClick={()=>navigate(`/admin/users/${item._id}`)}
+                                >Update</Button>
                                 <Button 
                                 className="bg-destructive text-white hover:bg-destructive/90 font-medium"
                                 onClick={()=>handleDelete(item._id)}
@@ -173,7 +224,7 @@ export default function Users(){
                     </Table>
                 </div>
                 : (subjects.length !== 0) &&
-                <div className="w-full h-fit flex p-2">
+                <div className="w-full h-fit flex p-2 flex-col">
                     <Table className="min-w-full">
                         <TableCaption className="text-white">{message}</TableCaption>
                         <TableHeader>
@@ -207,6 +258,10 @@ export default function Users(){
                         <TableFooter>
                         </TableFooter>
                     </Table>
+                    <div className="flex justify-center items-center gap-1 flex-col m-3">
+                        <Button className="w-[20%] bg-emerald-500 hover:bg-emerald-700 text-white" variant="secondary" onClick={()=>navigate("/admin/subjects")}>Add Subject</Button>
+                        <Button className="w-[20%] bg-emerald-500 hover:bg-emerald-700 text-white" variant="secondary" onClick={()=>handleAssigned()}>Assigned Subject</Button>
+                    </div>
                 </div>
                 }
             </div>
