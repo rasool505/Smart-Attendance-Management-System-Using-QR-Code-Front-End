@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import Cookie from 'cookie-universal';
 import { Navigate, Outlet } from 'react-router-dom';
-import Loading from '../Components/Website/Loading';
+import Loading from '@/Components/atom/Loading';
 
 export default function AuthRequird({allowedRole}) {
     const cookie = Cookie();

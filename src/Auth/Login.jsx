@@ -35,6 +35,21 @@ export default function Login(){
     const [timeLeft, setTimeLeft] = useState(120)
     const [otp, setOtp] = useState(false)
 
+    useEffect(()=>{
+        const token = cookie.get("accessToken");
+        const userRole = cookie.get("userRole");
+        if (token) {
+            if(userRole === 0)
+                window.location.pathname="/admin";
+            else if (userRole === 1)
+                window.location.pathname="/student";
+            else if (userRole === 2)
+                window.location.pathname="/instructor";
+            else
+                window.location.pathname="/403"
+        }
+    },[])
+
     useEffect(() => {
         if(otp){
             if (timeLeft <= 0) return;
@@ -89,6 +104,14 @@ export default function Login(){
             cookie.set("accessToken", data.data.token);
             setLoading(false)
             setOtp(true)
+            if(data.data.userRole === 0)
+                window.location.pathname="/admin";
+            else if (data.data.userRole === 1)
+                window.location.pathname="/student";
+            else if (data.data.userRole === 2)
+                window.location.pathname="/instructor";
+            else
+                window.location.pathname="/403"
         })
         .catch(err=>{
             try {

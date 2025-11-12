@@ -16,6 +16,8 @@ import { useEffect, useState } from "react"
 import Cookie from 'cookie-universal'
 import QRCode from "qrcode"
 import { Print } from "@/Components/print/Print"
+import { Label } from "@/Components/ui/label"
+import Header from "@/Components/atom/Header";
 
 
 
@@ -88,6 +90,7 @@ export default function Instructor() {
         })
         .then(res=>{
             setReports(res.data)
+            console.log(res.data)
         })
         .catch((err)=>{
         try {
@@ -129,8 +132,12 @@ export default function Instructor() {
     }
 
 
+
     return (
-        <div className="w-screen min-h-screen text-white flex p-2 flex-col">
+        <div className="w-screen min-h-screen text-white flex p-2 flex-col overflow-x-auto">
+        <div className="w-full h-fit mb-4">
+            <Header/>
+        </div>
         <Table>
         <TableCaption className="text-white">List Of All Your Subjects.</TableCaption>
         <TableCaption className="text-white">{message}</TableCaption>
@@ -189,18 +196,34 @@ export default function Instructor() {
         {
         (reports.length !== 0)
         &&
-        <div className="flex justify-center items-center flex-col w-full">
-        <Table>
+        <div className="flex justify-center items-center flex-col overflow-x-auto w-full">
+        <div className="w-full h-fit flex p-2">
+            <div className="h-fit flex justify-items-start flex-col gap-2 mb-1.5 flex-1">
+                <Label>Instructor Name: {reports.instructorName}</Label>
+                <Label>Subject Name: {reports.subjectName}</Label>
+                <Label>Department: {reports.department}</Label>
+                <Label>Stage: {reports.stage}</Label>
+            </div>
+            <div className="h-fit flex justify-items-end flex-col gap-2 mb-1.5">
+                <Label>Total Lectures: {reports.totalSessions}</Label>
+                <Label>Academic Year: {(reports.year + 1)}-{reports.year}</Label>
+            </div>
+        </div>
+        <Table className="min-w-full">
         <TableCaption className="text-white">Monthly Attendance Report</TableCaption>
         <TableCaption className="text-white">{message}</TableCaption>
         <TableHeader>
             <TableRow>
                 <TableHead className="text-white">No.</TableHead>
                 <TableHead className="text-white">Student Name</TableHead>
-                <TableHead className="text-white">Present</TableHead>
-                <TableHead className="text-white">Absent</TableHead>
-                <TableHead className="text-white">Leave</TableHead>
-                <TableHead className="text-white flex justify-center items-center">Action</TableHead>
+                {
+                    reports?.report[0].dates.map((d, i) => (
+                        <TableHead key={i} className="text-white">
+                            {d.date}
+                        </TableHead>
+                    ))
+                }
+                <TableHead className="text-white">Action</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
@@ -211,27 +234,19 @@ export default function Instructor() {
             <TableRow key={item.studentId}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{item.studentName}</TableCell>
-                <TableCell>{item.present}</TableCell>
-                <TableCell>{item.absent}</TableCell>
-                <TableCell>{item.leave}</TableCell>
-                <TableCell className="flex justify-center items-center">
-                    <div className="flex justify-start items-center gap-1">
-                        <Button variant="destructive" className="bg-green-500 hover:bg-emerald-800" onClick={()=>handelLeave(item.studentId, reports.subjectId)}>Leave</Button>
-                    </div>
+                {item.dates.map((d, i) => (
+                    <TableCell key={i}>
+                        {d.status}
+                    </TableCell>
+                ))}
+                <TableCell>
+                    <Button className="bg-emerald-500 hover:bg-emerald-700 h-6 font-medium" onClick={()=>handelLeave(item.studentId, reports.subjectId)}>Leave</Button>
                 </TableCell>
             </TableRow>
             ))
         }
         </TableBody>
         <TableFooter>
-            <TableRow>
-            <TableCell colSpan={5}>Total Lectures</TableCell>
-            <TableCell className="text-right">{reports.totalSessions}</TableCell>
-            </TableRow>
-            <TableRow>
-            <TableCell colSpan={5}>Month / Year</TableCell>
-            <TableCell className="text-right">{reports.month}/{reports.year}</TableCell>
-            </TableRow>
         </TableFooter>
         </Table>
         {

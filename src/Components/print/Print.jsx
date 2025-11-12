@@ -2,14 +2,21 @@
 export function Print(reports){
 
     const printWindow = window.open('', '', 'width=800,height=600');
-
+    const head = reports?.report[0].dates.map((d, i) => (
+                        `<th key=${i}>
+                            ${d.date}
+                        </th>`
+                    )).join('');
+    console.log(head)
     const dataShow = reports?.report?.map((item, index) => 
                 `<tr key=${index}>
                 <td>${index + 1}</td>
                 <td>${item.studentName}</td>
-                <td>${item.present}</td>
-                <td>${item.absent}</td>
-                <td>${item.leave}</td>
+                ${item.dates.map((d, i) => (
+                    `<td key=${i}>
+                        ${d.status}
+                    </td>`
+                )).join('')}
                 </tr>`
             ).join('')
 
@@ -43,29 +50,30 @@ export function Print(reports){
         </head>
         <body>
         <h2>Attendance Report</h2>
+        <div style="width: 100%; display: flex; padding: 8px; box-sizing: border-box;">
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; flex: 1;">
+            <label>Instructor Name: ${reports.instructorName}</label>
+            <label>Subject Name: ${reports.subjectName}</label>
+            <label>Department: ${reports.department}</label>
+            <label>Stage: ${reports.stage}</label>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px;">
+            <label>Total Lectures: ${reports.totalSessions}</label>
+            <label>Academic Year: ${(reports.year + 1)}-${reports.year}</label>
+        </div>
+        </div>
         <table>
             <thead>
             <tr>
                 <th>No.</th>
                 <th>Student Name</th>
-                <th>Present</th>
-                <th>Absent</th>
-                <th>Leave</th>
+                ${head}
             </tr>
             </thead>
             <tbody>
             ${dataShow}
             </tbody>
             <tfoot>
-            <tr>
-                <td colspan="4">Total Lectures</td>
-                <td> ${reports.totalSessions} </td>
-                
-            </tr>
-            <tr>
-                <td colspan="4">Month / Year</td>
-                <td> ${reports.month}/${reports.year} </td>
-            </tr>
             </tfoot>
         </table>
         </body>
