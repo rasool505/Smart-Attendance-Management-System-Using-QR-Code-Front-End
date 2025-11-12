@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button"
 
 import {
     InputGroup,
-    InputGroupAddon,
     InputGroupInput,
 } from "@/components/ui/input-group"
 import {
@@ -21,7 +20,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { MailIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Axios } from "@/Api/AxiosCreate";
 import { getAllInstructors, subject } from "@/Api/Api";
@@ -54,7 +52,7 @@ export default function AddSubject() {
                 if (err.response) {
                     setMessage(err.response.data.message)
                 } else{
-                setMessage(err.message)
+                    setMessage(err.message)
                 }
             } catch (error) {
                 console.log(error)
@@ -78,9 +76,10 @@ export default function AddSubject() {
             console.log(err)
             try {
                 if (err.response) {
-                    setMessage(err.response)
-                }
+                    setMessage(err.response.data.message)
+                } else{
                 setMessage(err.message)
+                }
                 setLoading(false)
             } catch (error) {
                 setLoading(false)
@@ -116,9 +115,6 @@ export default function AddSubject() {
                         onChange={handleChange}
                         required
                         />
-                        <InputGroupAddon>
-                        <MailIcon />
-                        </InputGroupAddon>
                     </InputGroup>
                     </div>
 

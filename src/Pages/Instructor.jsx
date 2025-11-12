@@ -70,7 +70,7 @@ export default function Instructor() {
                 if (err.response) {
                     setMessage(err.response.data.message)
                 } else{
-                setMessage(err.message)
+                    setMessage(err.message)
                 }
             } catch (error) {
                 console.log(error)
@@ -97,7 +97,7 @@ export default function Instructor() {
             if (err.response) {
                 setMessage(err.response.data.message)
             } else{
-            setMessage(err.message)
+                setMessage(err.message)
             }
         } catch (error) {
             console.log(error)
@@ -122,7 +122,7 @@ export default function Instructor() {
             if (err.response) {
                 setMessage(err.response.data.message)
             } else{
-            setMessage(err.message)
+                setMessage(err.message)
             }
         } catch (error) {
             console.log(error)

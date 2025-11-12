@@ -10,6 +10,7 @@ import Admin from './Pages/Admin/Admin.jsx';
 import Users from './Pages/Admin/Users.jsx';
 import UpdateUser from './Pages/Admin/UpdateUser.jsx';
 import AddSubject from './Pages/Admin/AddSubject.jsx';
+import AddUser from './Pages/Admin/AddUser.jsx';
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
       <Route path='/admin' element={<Admin/>}>
         <Route path='users' element={<Users/>}/>
         <Route path='users/:id' element={<UpdateUser/>}/>
+        <Route path='addUser' element={<AddUser/>}/>
         <Route path='subjects' element={<AddSubject/>}/>
       </Route>
       </Route>

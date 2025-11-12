@@ -78,9 +78,10 @@ export default function Login(){
         .catch(err=>{
             try {
                 if (err.response) {
-                    setMessage(err.response)
-                }
+                    setMessage(err.response.data.message)
+                } else{
                 setMessage(err.message)
+                }
                 setLoading(false)
             } catch (error) {
                 setLoading(false)
@@ -116,9 +117,10 @@ export default function Login(){
         .catch(err=>{
             try {
                 if (err.response) {
-                    setMessage(err.response)
-                }
+                    setMessage(err.response.data.message)
+                } else{
                 setMessage(err.message)
+                }
                 setLoading(false)
             } catch (error) {
                 setLoading(false)

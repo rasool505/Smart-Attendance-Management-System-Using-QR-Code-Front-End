@@ -10,9 +10,11 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
-import {  useEffect, useState } from "react"
+} from "@/components/ui/table";
+import {  useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookie from 'cookie-universal';
+
 
 export default function Users(){
     const [users, setUsers] = useState([]);
@@ -20,6 +22,7 @@ export default function Users(){
     const [message, setMessage] = useState('');
     const [path, setPath] = useState(localStorage.getItem("path"));
     const navigate = useNavigate();
+    const cookie = new Cookie();
     
     useEffect(() => {
         if (path) {
@@ -44,7 +47,7 @@ export default function Users(){
                     if (err.response) {
                         setMessage(err.response.data.message)
                     } else{
-                    setMessage(err.message)
+                        setMessage(err.message)
                     }
                 } catch (error) {
                     console.log(error)
@@ -62,7 +65,7 @@ export default function Users(){
                     if (err.response) {
                         setMessage(err.response.data.message)
                     } else{
-                    setMessage(err.message)
+                        setMessage(err.message)
                     }
                 } catch (error) {
                     console.log(error)
@@ -80,7 +83,7 @@ export default function Users(){
                     if (err.response) {
                         setMessage(err.response.data.message)
                     } else{
-                    setMessage(err.message)
+                        setMessage(err.message)
                     }
                 } catch (error) {
                     console.log(error)
@@ -152,11 +155,20 @@ export default function Users(){
         )
     }
 
+    function handleLogout(){
+        cookie.remove("userId");
+        cookie.remove("userRole");
+        cookie.remove("accessToken");
+        localStorage.removeItem("path")
+        window.location.pathname="/login";
+    }
+
     return (
             <div className="flex justify-center items-center flex-col w-full">
                 <div className="w-full h-fit mb-4">
-                <header className="w-full h-4">
-                    <nav className="flex justify-items-start items-center p-1.5 gap-5">
+                <header className="w-full h-4 mb-5">
+                    <nav className="flex justify-between items-center p-1.5 gap-5">
+                        <div className="flex justify-items-start items-center p-1.5 gap-5">
                         <h1 className="scroll-m-20 text-center font-extrabold tracking-tight text-balance">ATTENDIFY</h1>
                         <Button variant="link" className="text-white" 
                         onClick={()=>{
@@ -178,13 +190,15 @@ export default function Users(){
                             setPath(localStorage.getItem("path"))
                         }}
                         >Subjects</Button>
+                        </div>
+                        <Button variant="destructive" onClick={handleLogout}>Logout</Button>
                     </nav>
                 </header>
                 </div>
                 {
                 (users.length !== 0)
                 ?
-                <div className="w-full h-fit flex p-2">
+                <div className="w-full h-fit flex p-2 flex-col">
                     <Table className="min-w-full">
                         <TableCaption className="text-white">{message}</TableCaption>
                         <TableHeader>
@@ -222,6 +236,9 @@ export default function Users(){
                         <TableFooter>
                         </TableFooter>
                     </Table>
+                    <div className="flex justify-center items-center gap-1 flex-col m-3">
+                        <Button className="w-[20%] bg-emerald-500 hover:bg-emerald-700 text-white" variant="secondary" onClick={()=>navigate("/admin/addUser")}>Add User</Button>
+                    </div>
                 </div>
                 : (subjects.length !== 0) &&
                 <div className="w-full h-fit flex p-2 flex-col">
